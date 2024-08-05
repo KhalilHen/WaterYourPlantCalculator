@@ -41,7 +41,7 @@
       "id": "dht1",
       "top": -287.7,
       "left": 321,
-      "attrs": { "humidity": "31" }
+      "attrs": { "humidity": "0", "temperature": "34.7" }
     },
     {
       "type": "wokwi-lcd2004",
@@ -57,16 +57,22 @@
       "left": 345.05,
       "rotate": 90,
       "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 52.8,
+      "left": 345.05,
+      "rotate": 90,
+      "attrs": { "value": "1000" }
     }
   ],
   "connections": [
     [ "mega:GND.1", "bb1:bn.1", "cyan", [ "h19.2", "v-67.4" ] ],
     [ "mega:5V", "bb1:bp.1", "red", [ "h-16.5", "v-180.1", "h86.4" ] ],
-    [ "dht1:VCC", "bb1:1b.i", "red", [ "v0" ] ],
     [ "dht1:GND", "bb1:2b.f", "black", [ "v0", "h19.2", "v38.4" ] ],
     [ "bb1:bp.2", "bb1:1b.j", "red", [ "h10.5", "v-29.6", "h19.2" ] ],
     [ "bb1:bn.2", "bb1:2b.j", "cyan", [ "h-17.9", "v8.8", "h48", "v-19.2" ] ],
-    [ "dht1:SDA", "mega:SDA", "green", [ "v0", "h-239.9", "v144" ] ],
     [
       "lcd2:SCL",
       "mega:21",
@@ -84,11 +90,22 @@
     [ "bb1:bp.50", "bb1:61b.j", "green", [ "h0" ] ],
     [ "lcd2:VCC", "bb1:61b.f", "red", [ "h19.2", "v-28.7", "h326.4", "v67.2", "h96", "v-28.8" ] ],
     [ "mega:3", "bb1:16b.j", "green", [ "h144", "v-100.1", "h67.2" ] ],
-    [ "r1:1", "bb1:10b.h", "", [ "$bb" ] ],
-    [ "r1:2", "bb1:16b.h", "", [ "$bb" ] ],
     [ "bb1:bn.6", "bb1:9b.j", "green", [ "h0" ] ],
     [ "rgb1:COM", "bb1:9b.f", "green", [ "v0" ] ],
-    [ "rgb1:R", "bb1:10b.f", "green", [ "v0" ] ]
+    [ "rgb1:R", "bb1:10b.f", "green", [ "v0" ] ],
+    [ "r1:1", "bb1:10b.h", "", [ "$bb" ] ],
+    [ "r1:2", "bb1:16b.h", "", [ "$bb" ] ],
+    [ "r2:1", "bb1:18b.h", "", [ "$bb" ] ],
+    [ "r2:2", "bb1:24b.h", "", [ "$bb" ] ],
+    [ "rgb1:G", "bb1:24b.f", "green", [ "v0" ] ],
+    [ "bb1:18b.j", "mega:4", "green", [ "h-67.2", "v76.8" ] ],
+    [ "dht1:SDA", "mega:2", "green", [ "v-19.2", "h-86.3", "v355.2" ] ],
+    [
+      "mega:3.3V",
+      "dht1:VCC",
+      "green",
+      [ "h-26.1", "v-228.2", "h345.6", "v-28.8", "h19.2", "v38.4" ]
+    ]
   ],
   "dependencies": {}
 }
