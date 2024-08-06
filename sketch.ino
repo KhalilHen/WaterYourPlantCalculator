@@ -2,231 +2,227 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define DHTPIN 2   // what pin we're connected to
+
+
+//RTC inittialization
+#include <RTClib.h> 
+ RTC_DS1307 rtc;  
+
+
+
+
+
+#define DHTPIN 2   // Pin connected to DHT sensor
 #define DHTTYPE DHT22
 
 DHT dht(DHTPIN, DHTTYPE);
 
-
-  bool humidityCheck;
+bool humidityCheck;
 bool temperatureCheck;
-bool  lightCheck;
-
-
+bool lightCheck;
 
 // For night
-bool  LightNightDayCheck;
+bool lightNightCheck;
 bool temperatureNightCheck;
 
-
-
 float humidity;
-float temperature; 
-int chk;
+float temperature;
 float lux;
 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
+#define LDR_PIN A0  // Pin connected to LDR
 
- LiquidCrystal_I2C lcd(0x27, 16, 2);
-
-
-#define LDR_PIN 2
-
-int lightValue;
 const float GAMMA = 0.7;
 const float RL10 = 50;
 
-
 int redPin = 3;
 int greenPin = 4;
+
+const unsigned long PRINT_INTERVAL = 5000; // 5 seconds
+unsigned long previousMillis = 0;
+
 void setup() {
-Serial.begin(9600);
-  dht.begin();
-
-  // put your setup code here, to run once:
-  pinMode(LDR_PIN, INPUT);
-
-  lcd.init();
+    Serial.begin(9600);
+    dht.begin();
+    
+    pinMode(LDR_PIN, INPUT);
+    
+    lcd.init();
     lcd.backlight();
-
+    
     pinMode(redPin, OUTPUT);
-        pinMode(greenPin, OUTPUT);
+    pinMode(greenPin, OUTPUT);
 
+
+     if (!rtc.begin()) {
+        Serial.println("Couldn't find RTC");
+        while (1); // Halt execution
+    }
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-humidity = dht.readHumidity();
-temperature = dht.readTemperature();
 
-  int analogValue = analogRead(A0);
-  float voltage = analogValue / 1024. * 5;
-  float resistance = 2000 * voltage / (1 - voltage / 5);
-  float lux = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
+DateTime now = rtc.now();
+    // Read sensor values
+    humidity = dht.readHumidity();
+    temperature = dht.readTemperature();
+    
+    int analogValue = analogRead(LDR_PIN);
+    float voltage = analogValue / 1024.0 * 5.0;
+    float resistance = 2000 * voltage / (1 - voltage / 5.0);
+    lux = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
+    
+      unsigned long currentMillis = millis();
 
-
- lightValue =  digitalRead(LDR_PIN);
-
-
-  Serial.print("Humidity: ");
-    Serial.print(humidity);
-    Serial.print(" %, Temp: ");
-    Serial.print(temperature);
-    Serial.println(" Celsius");
-  Serial.print(lux);
-//Not working yet
-
- 
- 
-
-
-
+    // Print sensor values at the defined interval
+    if (currentMillis - previousMillis >= PRINT_INTERVAL) {
+        previousMillis = currentMillis;
+        
+        // Print sensor values for debugging
+        Serial.print("Time: ");
+        Serial.print(now.hour());
+        Serial.print(":");
+        Serial.print(now.minute());
+        Serial.print(":");
+        Serial.print(now.second());
 
 
 
 
- nightTimeCheck();
-// Later add a clock to check if daytime then activate this
-// dayTimeCheck();
+        Serial.print(" - Humidity: ");
+        Serial.print(humidity);
+        Serial.print(" %, Temp: ");
+        Serial.print(temperature);
+        Serial.print(" Celsius, Light lux: ");
+        Serial.println(lux);
+        
+        // Update LCD display
+        lcd.setCursor(0, 0);
+        lcd.print("Humidity:");
+        lcd.setCursor(10, 0);
+        lcd.print(humidity);
+        lcd.setCursor(0, 1);
+        lcd.print("Temp:");
+        lcd.setCursor(10, 1);
+        lcd.print(temperature);
+        lcd.setCursor(0, 1);
+        lcd.print("Lux:");
+        lcd.setCursor(10, 1);
+        lcd.print(lux);
+    }
 
 
+    // Call day or night checks based on your logic
+    bool isDaytime = true;  // Replace with actual day/night detection logic
+    
+    if (isDaytime) {
+        dayTimeCheck();
+    } else {
+        nightTimeCheck();
+    }
 
-     lcd.setCursor(0, 0);
-     lcd.print("Humidity:");
-     lcd.setCursor(10,0);
-    lcd.print( humidity);
- delay(2000);
+    // Update LCD display
+    lcd.setCursor(0, 0);
+    lcd.print("Humidity:");
+    lcd.setCursor(10, 0);
+    lcd.print(humidity);
 
+    delay(2000);  // Delay between readings
 }
-
 
 void dayTimeCheck() {
+    checkMoisture();
+    handleDayTimeTemperature();
+    handleDayTimeLight();
+    
+    if (temperatureCheck == true  && humidityCheck == true  && lightCheck == true) {
+        greenColor();
+    } else {
+        redColor();
+    }
+}
 
+boolean checkMoisture() { 
+    if (humidity >= 40 && humidity <= 60)  {
 
-
-checkMoisture();
-  handleDayTimeTemperature();
-  handleDayTimeLight();
-  if(temperatureCheck == true && humidityCheck == true   && lightCheck == true ) {
-
-
-greenColor();
-
-  } 
-//   else if(temperatureCheck ==  || humidityCheck == null) { 
-  
-//     // Yellow stands for there wen't something wrong  
-//     yellowColor();
-// Serial.println("There wen't someting wrong");
-//   }
- else{
-
-  redColor();
+      humidityCheck = true;
+    }
+ else {
+humidityCheck = false;
  }
+}
+
+boolean handleDayTimeTemperature() {
+      if (temperature >= 18 && temperature <= 24)
+      {
+
+
+temperatureCheck = true;
+      }
+      else {
+temperatureCheck = false;
+      }
 
 }
 
-
-
-//This one also for in the night
-boolean  checkMoisture() { 
-  if (humidity >= 40 && humidity <= 60) {
-
-     humidityCheck = true;
-  }
-  else {
-   humidityCheck = false;
-  }
-}
-
-boolean  handleDayTimeTemperature() {
-
-   if(temperature >= 18 &&  temperature  <=  24) {
-
-     temperatureCheck = true;
-   }
-
-  //  else if(temperature == null) {
-
-  //   temperatureCheck =
-
-  //  }
-   else {
-
-      temperatureCheck = false; 
-   }
-}
-//too handle the light
 boolean handleDayTimeLight() {
+    if(lux >= 2000 && lux <= 5000) {
 
-if(lux  >= 2000 && lux <=  5000 ) {
-  lightCheck = true;
-}
-
-else {
-lightCheck = false;
-}
-}
-
-
-
-void  handleNightTimeTemperature() {
-
-  if(temperature >= 15 && temperature <= 20) {
-
-    temperatureNightCheck = true;
-
-  } 
+lightCheck = true;
+    }
   else {
 
-    temperatureNightCheck = false;
-
+  lightCheck = false;
   }
-}
-void handleNightTimeLight() {
-
-
-if(lux >= 0 && lux <= 200) {
-    LightNightDayCheck = true;
-}
-else {
-    LightNightDayCheck = false;
-}
-}
-void nightTimeCheck() {
-
-  handleNightTimeLight();
-  handleNightTimeTemperature();
-   checkMoisture();
-   if(temperatureNightCheck == true &&  LightNightDayCheck == true  &&   humidityCheck == true) {
-
-
-    greenColor();
-   } else {
-    redColor();
-   }
-}
-
-//Color functions
-//RED = Give water
-
- void redColor() {
-
-  digitalWrite(redPin, HIGH);
-  digitalWrite(greenPin, LOW);
-}
-//Green is plant has enough water
-
- void greenColor() {
-
-    digitalWrite(redPin, LOW);
-  digitalWrite(greenPin, HIGH);
-}
-//Yellow special situation  still thinking of a use case
-
- void yellowColor() {
-
   
+}
+
+void handleNightTimeTemperature() {
+    if (temperature >= 15 && temperature <= 20) {
+
+      temperatureNightCheck = true;
+    }
+    else {
+temperatureNightCheck = false;
+    }
+}
+
+void handleNightTimeLight() {
+      if (lux >= 0 && lux <= 200) {
+      
+      lightNightCheck = true;
+      }
+
+    else {
+lightNightCheck = false;
+    }
+}
+
+void nightTimeCheck() {
+    handleNightTimeLight();
+    handleNightTimeTemperature();
+    checkMoisture();
+    
+    if (temperatureNightCheck == true && lightNightCheck == true && humidityCheck == true) {
+        greenColor();
+    } else {
+        redColor();
+    }
+}
+
+// Color functions
+void redColor() {
     digitalWrite(redPin, HIGH);
-  digitalWrite(greenPin, HIGH);
+    digitalWrite(greenPin, LOW);
+}
+
+void greenColor() {
+    digitalWrite(redPin, LOW);
+    digitalWrite(greenPin, HIGH);
+}
+
+void yellowColor() {
+    digitalWrite(redPin, HIGH);
+    digitalWrite(greenPin, HIGH);
 }

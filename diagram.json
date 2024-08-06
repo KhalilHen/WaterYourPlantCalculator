@@ -48,7 +48,7 @@
       "id": "dht1",
       "top": -287.7,
       "left": 321,
-      "attrs": { "humidity": "44.5", "temperature": "34.7" }
+      "attrs": { "humidity": "46.5", "temperature": "18.9" }
     },
     {
       "type": "wokwi-lcd2004",
@@ -73,7 +73,14 @@
       "rotate": 90,
       "attrs": { "value": "1000" }
     },
-    { "type": "wokwi-ds1307", "id": "rtc1", "top": -543, "left": 0.1, "attrs": {} }
+    {
+      "type": "wokwi-ds1307",
+      "id": "rtc1",
+      "top": -292.7,
+      "left": 150.8,
+      "rotate": 270,
+      "attrs": {}
+    }
   ],
   "connections": [
     [ "mega:GND.1", "bb1:bn.1", "cyan", [ "h19.2", "v-67.4" ] ],
@@ -112,17 +119,22 @@
     ],
     [ "ldr1:VCC", "bb1:6b.f", "red", [ "v0" ] ],
     [ "ldr1:GND", "bb1:2b.h", "black", [ "v-272.3", "h-265.1" ] ],
-    [ "ldr1:DO", "mega:7", "yellow", [ "v6.1", "h61.5", "v-508.8", "h-556.8", "v460.8", "h9.6" ] ],
-    [ "r1:1", "bb1:10b.h", "", [ "$bb" ] ],
-    [ "r1:2", "bb1:16b.h", "", [ "$bb" ] ],
-    [ "r2:1", "bb1:18b.h", "", [ "$bb" ] ],
-    [ "r2:2", "bb1:24b.h", "", [ "$bb" ] ],
     [
       "ldr1:AO",
       "mega:A0",
       "gray",
       [ "v38.4", "h115.9", "v-595.2", "h-595.2", "v19.2", "h-268.8", "v508.8", "h9.6" ]
-    ]
+    ],
+    [ "rtc1:GND", "bb1:7b.j", "limegreen", [ "v153.6", "h115.2", "v-9.6", "h57.6", "v-9.6" ] ],
+    [ "bb1:bn.5", "bb1:7b.i", "green", [ "h0" ] ],
+    [ "r1:1", "bb1:10b.h", "", [ "$bb" ] ],
+    [ "r1:2", "bb1:16b.h", "", [ "$bb" ] ],
+    [ "r2:1", "bb1:18b.h", "", [ "$bb" ] ],
+    [ "r2:2", "bb1:24b.h", "", [ "$bb" ] ],
+    [ "rtc1:5V", "bb1:31b.j", "red", [ "v0" ] ],
+    [ "bb1:bp.24", "bb1:31b.i", "red", [ "h0" ] ],
+    [ "rtc1:SDA", "mega:SDA", "white", [ "v67.2", "h-86.7", "v96", "h-28.8", "v28.8" ] ],
+    [ "rtc1:SCL", "mega:SCL", "white", [ "v86.4", "h-77", "v86.4", "h-9.6" ] ]
   ],
   "dependencies": {}
 }
