@@ -11,9 +11,21 @@ DHT dht(DHTPIN, DHTTYPE);
   bool humidityCheck;
 bool temperatureCheck;
 bool  lightCheck;
+
+
+
+// For night
+bool  LightNightDayCheck;
+bool temperatureNightCheck;
+
+
+
 float humidity;
 float temperature; 
 int chk;
+float lux;
+
+
 
  LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -61,8 +73,7 @@ temperature = dht.readTemperature();
     Serial.print(" %, Temp: ");
     Serial.print(temperature);
     Serial.println(" Celsius");
-  Serial.println("  Light lux:");
-  Serial.print(lightValue);
+  Serial.print(lux);
 //Not working yet
 
  
@@ -74,9 +85,9 @@ temperature = dht.readTemperature();
 
 
 
-
+ nightTimeCheck();
 // Later add a clock to check if daytime then activate this
-dayTimeCheck();
+// dayTimeCheck();
 
 
 
@@ -93,7 +104,7 @@ void dayTimeCheck() {
 
 
 
- handleDayTimeMoisture(); 
+checkMoisture();
   handleDayTimeTemperature();
   handleDayTimeLight();
   if(temperatureCheck == true && humidityCheck == true   && lightCheck == true ) {
@@ -117,8 +128,8 @@ greenColor();
 
 
 
-
-boolean  handleDayTimeMoisture() { 
+//This one also for in the night
+boolean  checkMoisture() { 
   if (humidity >= 40 && humidity <= 60) {
 
      humidityCheck = true;
@@ -145,9 +156,10 @@ boolean  handleDayTimeTemperature() {
       temperatureCheck = false; 
    }
 }
+//too handle the light
 boolean handleDayTimeLight() {
 
-if(lightValue  >= 2000 && lightValue <=  5000 ) {
+if(lux  >= 2000 && lux <=  5000 ) {
   lightCheck = true;
 }
 
@@ -156,19 +168,44 @@ lightCheck = false;
 }
 }
 
-void handleMoistureValue() {
 
-if (humidity > 30 && humidity < 60)
-{
- greenColor();
 
+void  handleNightTimeTemperature() {
+
+  if(temperature >= 15 && temperature <= 20) {
+
+    temperatureNightCheck = true;
+
+  } 
+  else {
+
+    temperatureNightCheck = false;
+
+  }
+}
+void handleNightTimeLight() {
+
+
+if(lux >= 0 && lux <= 200) {
+    LightNightDayCheck = true;
 }
 else {
-redColor();
+    LightNightDayCheck = false;
 }
-
 }
+void nightTimeCheck() {
 
+  handleNightTimeLight();
+  handleNightTimeTemperature();
+   checkMoisture();
+   if(temperatureNightCheck == true &&  LightNightDayCheck == true  &&   humidityCheck == true) {
+
+
+    greenColor();
+   } else {
+    redColor();
+   }
+}
 
 //Color functions
 //RED = Give water
