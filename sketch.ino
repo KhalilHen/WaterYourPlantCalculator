@@ -3,9 +3,13 @@
 #include <LiquidCrystal_I2C.h>
 
 #define DHTPIN 2   // what pin we're connected to
-#define DHTTYPE DHT11 
+#define DHTTYPE DHT22
 
 DHT dht(DHTPIN, DHTTYPE);
+
+
+
+#define LDR_PIN 7
 
 
 float humidity;
@@ -15,6 +19,8 @@ int chk;
  LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 
+int lightValue;
+
 int redPin = 3;
 int greenPin = 4;
 void setup() {
@@ -22,6 +28,7 @@ Serial.begin(9600);
   dht.begin();
 
   // put your setup code here, to run once:
+  pinMode(LDR_PIN, INPUT);
 
   lcd.init();
     lcd.backlight();
@@ -43,17 +50,22 @@ temperature = dht.readTemperature();
     Serial.print(temperature);
     Serial.println(" Celsius");
 
+handleMoistureValue(); 
 
+//Not working yet
+ lightValue =  digitalRead(LDR_PIN);
 
+ if(lightValue < 600 ) {
 
-if (humidity > 30 && humidity < 60)
-{
- greenColor();
+    greenColor();
+    Serial.print("light:");
+    Serial.print(lightValue);
+ }
 
-}
-else {
-redColor();
-}
+// If indoor plant
+// 100-200 Lux
+
+// If
 
 
 
@@ -69,13 +81,33 @@ redColor();
 
      lcd.setCursor(0, 0);
      lcd.print("Humidity:");
+     lcd.setCursor(10,0);
     lcd.print( humidity);
  delay(2000);
+
+// Adjust this to a interval
+ delay(5000);
+ lcd.clear();
+ lcd.setCursor(0,0);
+ lcd.print("Temperature:");
+ lcd.setCursor(10,0);
+ lcd.print(temperature);
 
 }
 
 
+void handleMoistureValue() {
 
+if (humidity > 30 && humidity < 60)
+{
+ greenColor();
+
+}
+else {
+redColor();
+}
+
+}
 
 
 //Color functions

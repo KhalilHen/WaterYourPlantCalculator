@@ -27,13 +27,20 @@
       "attrs": { "common": "cathode" }
     },
     { "type": "wokwi-relay-module", "id": "relay1", "top": -268.6, "left": 499.2, "attrs": {} },
-    { "type": "wokwi-ks2e-m-dc5", "id": "relay2", "top": -417.9, "left": 426.5, "attrs": {} },
-    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -102.17, "left": 620.8, "attrs": {} },
+    {
+      "type": "wokwi-ks2e-m-dc5",
+      "id": "relay2",
+      "top": -292.2,
+      "left": 407.4,
+      "rotate": 90,
+      "attrs": {}
+    },
     {
       "type": "wokwi-photoresistor-sensor",
       "id": "ldr1",
-      "top": -332.8,
-      "left": 644,
+      "top": -0.3,
+      "left": 589.7,
+      "rotate": 90,
       "attrs": {}
     },
     {
@@ -41,7 +48,7 @@
       "id": "dht1",
       "top": -287.7,
       "left": 321,
-      "attrs": { "humidity": "0", "temperature": "34.7" }
+      "attrs": { "humidity": "49.5", "temperature": "34.7" }
     },
     {
       "type": "wokwi-lcd2004",
@@ -105,7 +112,11 @@
       "dht1:VCC",
       "green",
       [ "h-26.1", "v-228.2", "h345.6", "v-28.8", "h19.2", "v38.4" ]
-    ]
+    ],
+    [ "ldr1:VCC", "bb1:6b.f", "red", [ "v0" ] ],
+    [ "ldr1:GND", "bb1:2b.h", "black", [ "v-272.3", "h-265.1" ] ],
+    [ "ldr1:AO", "mega:A0", "green", [ "v15.7", "h138.4", "v-585.6", "h-1008", "v364.8" ] ],
+    [ "ldr1:DO", "mega:7", "yellow", [ "v6.1", "h61.5", "v-508.8", "h-556.8", "v460.8", "h9.6" ] ]
   ],
   "dependencies": {}
 }
