@@ -8,8 +8,8 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 
-
-
+  bool humidityCheck;
+bool temperatureCheck;
 
 float humidity;
 float temperature; 
@@ -44,8 +44,8 @@ Serial.begin(9600);
 
 void loop() {
   // put your main code here, to run repeatedly:
-// humidity = dht.readHumidity();
-// temperature = dht.readTemperature();
+humidity = dht.readHumidity();
+temperature = dht.readTemperature();
 
   int analogValue = analogRead(A0);
   float voltage = analogValue / 1024. * 5;
@@ -60,7 +60,6 @@ void loop() {
     Serial.print(temperature);
     Serial.println(" Celsius");
 
-handleMoistureValue(); 
 
 //Not working yet
  lightValue =  digitalRead(LDR_PIN);
@@ -108,16 +107,49 @@ dayTimeCheck();
 
 void dayTimeCheck() {
 
-    if ((humidity >= 40 && humidity <= 60) && temperature >= 18) {
+    //if ((humidity >= 40 && humidity <= 60) && temperature >= 18) {
+// }
+
+ handleDayTimeMoisture(); 
+  handleDayTimeTemperature();
+  if(temperatureCheck == true && humidityCheck == true) {
+
 
 greenColor();
 
+  } 
+  else {
+
+    redColor();
+  }
+
 
 }
 
 
+
+
+boolean  handleDayTimeMoisture() { 
+  if (humidity >= 40 && humidity <= 60) {
+
+    bool humidityCheck = true;
+  }
+  else {
+   return false;
+  }
 }
 
+boolean  handleDayTimeTemperature() {
+
+   if(temperature >= 18 ||  temperature  <=  24) {
+
+    bool temperatureCheck = true;
+   }
+   else {
+
+    return false; 
+   }
+}
 
 void handleMoistureValue() {
 
