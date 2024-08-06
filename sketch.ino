@@ -9,7 +9,6 @@ DHT dht(DHTPIN, DHTTYPE);
 
 
 
-#define LDR_PIN 7
 
 
 float humidity;
@@ -19,7 +18,12 @@ int chk;
  LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 
+#define LDR_PIN 2
+
 int lightValue;
+const float GAMMA = 0.7;
+const float RL10 = 50;
+
 
 int redPin = 3;
 int greenPin = 4;
@@ -40,8 +44,14 @@ Serial.begin(9600);
 
 void loop() {
   // put your main code here, to run repeatedly:
-humidity = dht.readHumidity();
-temperature = dht.readTemperature();
+// humidity = dht.readHumidity();
+// temperature = dht.readTemperature();
+
+  int analogValue = analogRead(A0);
+  float voltage = analogValue / 1024. * 5;
+  float resistance = 2000 * voltage / (1 - voltage / 5);
+  float lux = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
+
 
 
   Serial.print("Humidity: ");
@@ -55,13 +65,21 @@ handleMoistureValue();
 //Not working yet
  lightValue =  digitalRead(LDR_PIN);
 
- if(lightValue < 600 ) {
+  lcd.print("Room: ");
+  if (lux < 600 && humidity ) {
 
-    greenColor();
-    Serial.print("light:");
-    Serial.print(lightValue);
- }
+  greenColor();
 
+  } else {
+    lcd.print("Dark  ");
+  }
+
+
+
+  lcd.setCursor(0, 1);
+  lcd.print("Lux: ");
+  lcd.print(lux);
+  lcd.print("          ");
 // If indoor plant
 // 100-200 Lux
 
@@ -74,8 +92,8 @@ handleMoistureValue();
 //  greenColor();
 
 // delay(2000);
-
-
+// Later add a clock to check if daytime then activate this
+dayTimeCheck();
 
 
 
@@ -85,13 +103,18 @@ handleMoistureValue();
     lcd.print( humidity);
  delay(2000);
 
-// Adjust this to a interval
- delay(5000);
- lcd.clear();
- lcd.setCursor(0,0);
- lcd.print("Temperature:");
- lcd.setCursor(10,0);
- lcd.print(temperature);
+}
+
+
+void dayTimeCheck() {
+
+    if ((humidity >= 40 && humidity <= 60) && temperature >= 18) {
+
+greenColor();
+
+
+}
+
 
 }
 
