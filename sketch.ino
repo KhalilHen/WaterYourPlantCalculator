@@ -10,7 +10,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
   bool humidityCheck;
 bool temperatureCheck;
-
+bool  lightCheck;
 float humidity;
 float temperature; 
 int chk;
@@ -53,44 +53,28 @@ temperature = dht.readTemperature();
   float lux = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
 
 
+ lightValue =  digitalRead(LDR_PIN);
+
 
   Serial.print("Humidity: ");
     Serial.print(humidity);
     Serial.print(" %, Temp: ");
     Serial.print(temperature);
     Serial.println(" Celsius");
-
-
+  Serial.println("  Light lux:");
+  Serial.print(lightValue);
 //Not working yet
- lightValue =  digitalRead(LDR_PIN);
 
-  lcd.print("Room: ");
-  if (lux < 600 && humidity ) {
-
-  greenColor();
-
-  } else {
-    lcd.print("Dark  ");
-  }
+ 
+ 
 
 
 
-  lcd.setCursor(0, 1);
-  lcd.print("Lux: ");
-  lcd.print(lux);
-  lcd.print("          ");
-// If indoor plant
-// 100-200 Lux
-
-// If
 
 
 
-// delay(5000);
 
-//  greenColor();
 
-// delay(2000);
 // Later add a clock to check if daytime then activate this
 dayTimeCheck();
 
@@ -107,22 +91,27 @@ dayTimeCheck();
 
 void dayTimeCheck() {
 
-    //if ((humidity >= 40 && humidity <= 60) && temperature >= 18) {
-// }
+
 
  handleDayTimeMoisture(); 
   handleDayTimeTemperature();
-  if(temperatureCheck == true && humidityCheck == true) {
+  handleDayTimeLight();
+  if(temperatureCheck == true && humidityCheck == true   && lightCheck == true ) {
 
 
 greenColor();
 
   } 
-  else {
+//   else if(temperatureCheck ==  || humidityCheck == null) { 
+  
+//     // Yellow stands for there wen't something wrong  
+//     yellowColor();
+// Serial.println("There wen't someting wrong");
+//   }
+ else{
 
-    redColor();
-  }
-
+  redColor();
+ }
 
 }
 
@@ -132,23 +121,39 @@ greenColor();
 boolean  handleDayTimeMoisture() { 
   if (humidity >= 40 && humidity <= 60) {
 
-    bool humidityCheck = true;
+     humidityCheck = true;
   }
   else {
-   return false;
+   humidityCheck = false;
   }
 }
 
 boolean  handleDayTimeTemperature() {
 
-   if(temperature >= 18 ||  temperature  <=  24) {
+   if(temperature >= 18 &&  temperature  <=  24) {
 
-    bool temperatureCheck = true;
+     temperatureCheck = true;
    }
+
+  //  else if(temperature == null) {
+
+  //   temperatureCheck =
+
+  //  }
    else {
 
-    return false; 
+      temperatureCheck = false; 
    }
+}
+boolean handleDayTimeLight() {
+
+if(lightValue  >= 2000 && lightValue <=  5000 ) {
+  lightCheck = true;
+}
+
+else {
+lightCheck = false;
+}
 }
 
 void handleMoistureValue() {
